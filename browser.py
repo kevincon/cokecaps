@@ -39,8 +39,15 @@ try:
 	driver.implicitly_wait(5)
 	#inputElement.send_keys(userCode)
 
+	#close the dialog box that opens when entering a code
+	driver.find_elements_by_class_name("closeButton").click()
+
+except #codeErrorPop.is_visible() :
 
 
 finally:
         driver.get("http://www.google.com")
+
+
+
 
