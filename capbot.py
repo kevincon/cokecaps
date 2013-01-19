@@ -27,10 +27,12 @@ class capbot:
 	def __init__(self, e, pw):
 		self.email = e
 		self.password = pw
+		self.driver = webdriver.Firefox()
 	
 	def __init__(self):
 		self.email = "null"
 		self.password = "null"
+		self.driver = webdriver.Firefox()
 
 	def get_email(self):
 		return self.email
@@ -45,33 +47,29 @@ class capbot:
 		self.password = pw
 	
 	def log_in(self):	
-		retval = False
-		# Create a new instance of the Firefox driver
-		driver = webdriver.Firefox()
-
 		# go to MCR
-		driver.get("http://www.mycokerewards.com")
+		self.driver.get("http://www.mycokerewards.com")
 
 		# find email field and enter email
-		inputElement = driver.find_element_by_id("emailAddress")
-		#inputElement.send_keys("4biddensodaluv@gmail.com")
-		inputElement.send_keys(self.email)
+		inputElement = self.driver.find_element_by_id("emailAddress")
+		inputElement.send_keys("4biddensodaluv@gmail.com")
+		#inputElement.send_keys(self.email)
 
 		# find password field and enter password
-		inputElement = driver.find_element_by_id("passwordText")
-		#inputElement.send_keys("sodaluver")
-		inputElement.send_keys(self.password)
+		inputElement = self.driver.find_element_by_id("passwordText")
+		inputElement.send_keys("sodaluver")
+		#inputElement.send_keys(self.password)
 
 		# submit the log-in information
 		inputElement.submit()
 
 		#Wait and see if the user logged in successfully
 		try:
-			element = WebDriverWait(driver, 10).until(lambda driver : driver.find_element_by_link_text("Sign Out"))
-		except (ElementNotSelectableException, ElementNotVisibleException):
+			element = WebDriverWait(self.driver, 10).until(lambda driver : self.driver.find_element_by_link_text("Sign Out"))
+		except (ElementNotSelectableException, ElementNotVisibleException, TimeoutException):
 			raise LoginError("Incorrect login information")
-		except TimeoutException:
-			raise InternetError("Login timed out, try again later")
+		#except:
+		#	raise InternetError("Login timed out, try again later")
 
 	def enter_code(self, code):
 		#close the dialog box that opens when entering a code
@@ -79,9 +77,14 @@ class capbot:
 		pass
 	
 	def log_out(self):
+		#preconditions: main page showing, regular screen immediately after log-in must be showing, NO ERROR BUBBLE, NO ENTER CODE BUBBLE
 		#sign out
+		element = self.driver.find_element_by_link_text("Sign Out")
+		element.click()
+
 		#close browser window
-		pass
+		self.driver.close()
+
 
 test = capbot()
 test.set_email("casey@gmail.com")
@@ -92,3 +95,5 @@ except LoginError, e:
 	print str(e.args)
 except InternetError, j:
 	print str(j.args)
+finally:
+	test.log_out()
