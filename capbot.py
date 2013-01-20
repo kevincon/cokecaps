@@ -8,19 +8,19 @@ from selenium.webdriver.support import expected_conditions as EC # available sin
 #Exceptions
 class InternetError(Exception):
    def __init__(self, arg):
-      self.args = "Internet Error: " + arg
+      self.args = 'Internet Error: ' + arg
 
 class LoginError(Exception):
    def __init__(self, arg):
-      self.args = "Login Error: " + arg
+      self.args = 'Login Error: ' + arg
 
 class BadCodeError(Exception):
    def __init__(self, arg):
-      self.args = "Bad Code Error: " + arg
+      self.args = 'Bad Code Error: ' + arg
 
 class PointLimitError(Exception):
    def __init__(self, arg):
-      self.args = "Point Limit Error: " + arg
+      self.args = 'Point Limit Error: ' + arg
 
 #Code Entering Automation
 class capbot:
@@ -29,10 +29,10 @@ class capbot:
 		self.password = pw
 		self.driver = webdriver.Firefox()
 	
-	def __init__(self):
-		self.email = "null"
-		self.password = "null"
-		self.driver = webdriver.Firefox()
+	#def __init__(self):
+	#	self.email = "null"
+	#	self.password = "null"
+	#	self.driver = webdriver.Firefox()
 
 	def get_email(self):
 		return self.email
@@ -52,29 +52,41 @@ class capbot:
 
 		# find email field and enter email
 		inputElement = self.driver.find_element_by_id("emailAddress")
-		inputElement.send_keys("4biddensodaluv@gmail.com")
-		#inputElement.send_keys(self.email)
+		#inputElement.send_keys("4biddensodaluv@gmail.com")
+		inputElement.send_keys(self.email)
 
 		# find password field and enter password
 		inputElement = self.driver.find_element_by_id("passwordText")
-		inputElement.send_keys("sodaluver")
-		#inputElement.send_keys(self.password)
+		#inputElement.send_keys("sodaluver")
+		inputElement.send_keys(self.password)
 
 		# submit the log-in information
 		inputElement.submit()
 
-		#Wait and see if the user logged in successfully
+		#Wait and see if the user logged in successfully, want to be able to wait, and determine if log-in failed by using
+			#self.driver.find_element_by_class_name("balloonErrorBody")
+			#self.driver.find_element_by_id("loginForm")
 		try:
 			element = WebDriverWait(self.driver, 10).until(lambda driver : self.driver.find_element_by_link_text("Sign Out"))
+
+		
 		except (ElementNotSelectableException, ElementNotVisibleException, TimeoutException):
-			raise LoginError("Incorrect login information")
+			raise LoginError('Incorrect login information')
+
 		#except:
-		#	raise InternetError("Login timed out, try again later")
+		#	raise InternetError('Login timed out, try again later')
 
 	def enter_code(self, code):
+		#enter code into field
+		codeInput = self.driver.find_element_by_id("rewardCode")
+		codeInput.send_keys(code)
+		codeInput.submit()
+		
 		#close the dialog box that opens when entering a code
-		#driver.find_elements_by_class_name("closeButton").click()
-		pass
+		self.driver.implicitly_wait(5)
+		self.driver.refresh()
+		#self.driver.find_elements_by_tag_name("a").click()
+		
 	
 	def log_out(self):
 		#preconditions: main page showing, regular screen immediately after log-in must be showing, NO ERROR BUBBLE, NO ENTER CODE BUBBLE
@@ -86,14 +98,15 @@ class capbot:
 		self.driver.close()
 
 
-test = capbot()
-test.set_email("casey@gmail.com")
-test.set_password("123123")
+test = capbot('4biddensodaluv@gmail.com', 'sodaluver')
 try:
 	retval = test.log_in()
 except LoginError, e:
-	print str(e.args)
+	print "".join(e.args)
 except InternetError, j:
-	print str(j.args)
-finally:
-	test.log_out()
+	print "".join(j.args)
+test.enter_code("v674ppv4x770k5")
+test.log_out()
+print "done"
+#finally:
+#	test.log_out()
