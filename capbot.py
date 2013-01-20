@@ -28,6 +28,8 @@ class capbot:
 		self.email = e
 		self.password = pw
 		self.driver = webdriver.Firefox()
+		self.driver.implicitly_wait(5)
+		self.points = 0
 
 	def get_email(self):
 		return self.email
@@ -43,7 +45,7 @@ class capbot:
 	
 	def log_in(self):	
 		# go to MCR
-		self.driver.get("http://www.mycokerewards.com")
+		self.driver.get("http://www.mycokerewards.com/home.do")
 
 		# find email field and enter email
 		inputElement = self.driver.find_element_by_id("emailAddress")
@@ -56,9 +58,7 @@ class capbot:
 		# submit the log-in information
 		inputElement.submit()
 
-		#Wait and see if the user logged in successfully, want to be able to wait, and determine if log-in failed by using
-			#self.driver.find_element_by_class_name("balloonErrorBody")
-			#self.driver.find_element_by_id("loginForm")
+		#Wait and see if the user logged in successfully
 		try:
 			element = WebDriverWait(self.driver, 10).until(lambda driver : self.driver.find_element_by_link_text("Sign Out"))
 
@@ -67,21 +67,51 @@ class capbot:
 			raise LoginError('Incorrect login information')
 		#except:
 		#	raise InternetError('Login timed out, try again later')
+		
 
 	def enter_code(self, code):
+		pointsElement = self.driver.find_element_by_id("glPointsText")
+		init_numPoints = pointsElement.text
+		self.points = init_numPoints
+		print init_numPoints
+		
 		#enter code into field
 		codeInput = self.driver.find_element_by_id("rewardCode")
 		codeInput.send_keys(code)
 		codeInput.submit()
 		
-		#close the dialog box that opens when entering a code
-		self.driver.implicitly_wait(5)
-		self.driver.refresh()
+		
+		
+		
+		#sign out
+		signOut = self.driver.find_element_by_link_text("Sign Out")
+		signOut.click()
+		
+		#sign back in
+		try:
+			self.log_in()
+		except LoginError, e:
+			print "".join(e.args)
+		except InternetError, j:
+			print "".join(j.args)
+		
+		#check new points number against old number
+		pointsElement = self.driver.find_element_by_id("glPointsText")
+		final_numPoints = pointsElement.text
+		print final_numPoints
+		
+		#raises exception if the code did not get added to account...
+		if self.points == final_numPoints:
+			raise BadCodeError('Invalid Code Entered')
+		#otherwise, sets value of self.points to new number of points
+		else:
+			self.points = final_numPoints
 		
 		
 	
 	def log_out(self):
 		#preconditions: main page showing, regular screen immediately after log-in must be showing, NO ERROR BUBBLE, NO ENTER CODE BUBBLE
+		
 		#sign out
 		element = self.driver.find_element_by_link_text("Sign Out")
 		element.click()
@@ -97,13 +127,17 @@ class capbot:
 
 test = capbot('4biddensodaluv@gmail.com', 'sodaluver')
 try:
-	retval = test.log_in()
+	test.log_in()
 except LoginError, e:
 	print "".join(e.args)
 except InternetError, j:
 	print "".join(j.args)
-test.enter_code("abc123")
-test.log_out()
+try:
+	#test.enter_code("garbage")
+	test.enter_code("6vt6blf6vm597n")
+except BadCodeError, b:
+	print "".join(b.args)
+#test.log_out() #comment out for debugging and viewing the page so it doesn't just disappear!
 print "done"
 
 
