@@ -119,23 +119,23 @@ class CokeOCR:
         thresh = cv2.adaptiveThreshold(gray,255,0,1,11,2)
         #thresh_color = cv2.cvtColor(thresh,cv2.COLOR_GRAY2BGR)
         cv2.imshow('VideoWindow', thresh)
-        cv2.waitKey(0)
+        #cv2.waitKey(0)
 
         thresh = cv2.erode(thresh,None,iterations = 2)
         cv2.imshow('VideoWindow', thresh)
-        cv2.waitKey(0)
+        #cv2.waitKey(0)
         
         thresh = cv2.dilate(thresh,None,iterations = 2)
         cv2.imshow('VideoWindow', thresh)
-        cv2.waitKey(0)
+        #cv2.waitKey(0)
 
         thresh = cv2.erode(thresh,None,iterations = 2)
         cv2.imshow('VideoWindow', thresh)
-        cv2.waitKey(0)
+        #cv2.waitKey(0)
         
         thresh = cv2.dilate(thresh,None,iterations = 2)
         cv2.imshow('VideoWindow', thresh)
-        cv2.waitKey(0)
+        #cv2.waitKey(0)
 
         #thresh = cv2.dilate(thresh,None,iterations = 3)
         #cv2.imshow('VideoWindow', thresh)
@@ -148,11 +148,11 @@ class CokeOCR:
         #thresh_im=im.copy()
         #thresh_im[TARGET_RECTANGLE_Y:TARGET_RECTANGLE_Y+TARGET_RECTANGLE_HEIGHT,TARGET_RECTANGLE_X:TARGET_RECTANGLE_X+TARGET_RECTANGLE_WIDTH] = thresh[:,:]
         cv2.imshow('VideoWindow', thresh)
-        cv2.waitKey(0)
+        #cv2.waitKey(0)
 
         median = cv2.medianBlur(thresh, 3)
         cv2.imshow('VideoWindow', median)
-        cv2.waitKey(0)
+        #cv2.waitKey(0)
 
         thresh = median.copy()
 
@@ -210,4 +210,4 @@ class CokeOCR:
         if i < 14+3 and i > 14-3:
             print "Your code is: %s" % (code)
         return boxes
-        
+
