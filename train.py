@@ -2,6 +2,14 @@ import numpy as np
 import cv2
 from constants import *
 
+def detectColor(im):
+    hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+    BLUE_MIN = np.array([71, 44, 18],np.uint8)
+    BLUE_MAX = np.array([123, 90, 40],np.uint8)
+    hsv=cv2.inRange(im, BLUE_MIN, BLUE_MAX)
+
+    return hsv
+
 
 def crop(im):
     return im[TARGET_RECTANGLE_Y:TARGET_RECTANGLE_Y + TARGET_RECTANGLE_HEIGHT, TARGET_RECTANGLE_X:TARGET_RECTANGLE_X + TARGET_RECTANGLE_WIDTH]
@@ -21,11 +29,43 @@ class CokeOCR:
 
     def analyze(self, im):
         cropped = crop(im)
+        #EXPERIMENTAL
+        #color=detectColor(cropped)
+        #cv2.imshow('VideoWindow', color)
+        #cv2.waitKey(0)
+
         gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
-        blur = cv2.GaussianBlur(gray, (5, 5), 10)
-        # cv2.imshow('VideoWindow', blur)
-        # cv2.waitKey(0)
-        thresh = cv2.adaptiveThreshold(blur, 255, 0, 1, 5, 1)
+        blur = cv2.medianBlur(gray,5)
+        
+        thresh = cv2.adaptiveThreshold(gray,255,0,1,11,2)
+        #thresh_color = cv2.cvtColor(thresh,cv2.COLOR_GRAY2BGR)
+        cv2.imshow('VideoWindow', thresh)
+        cv2.waitKey(0)
+
+        thresh = cv2.erode(thresh,None,iterations = 2)
+        cv2.imshow('VideoWindow', thresh)
+        cv2.waitKey(0)
+        
+        thresh = cv2.dilate(thresh,None,iterations = 2)
+        cv2.imshow('VideoWindow', thresh)
+        cv2.waitKey(0)
+
+        thresh = cv2.erode(thresh,None,iterations = 2)
+        cv2.imshow('VideoWindow', thresh)
+        cv2.waitKey(0)
+        
+        thresh = cv2.dilate(thresh,None,iterations = 2)
+        cv2.imshow('VideoWindow', thresh)
+        cv2.waitKey(0)
+
+        #thresh = cv2.dilate(thresh,None,iterations = 3)
+        #cv2.imshow('VideoWindow', thresh)
+        #cv2.waitKey(0)
+
+
+
+
+        thresh = cv2.adaptiveThreshold(thresh, 255, 0, 1, 5, 1)
         #thresh_im=im.copy()
         #thresh_im[TARGET_RECTANGLE_Y:TARGET_RECTANGLE_Y+TARGET_RECTANGLE_HEIGHT,TARGET_RECTANGLE_X:TARGET_RECTANGLE_X+TARGET_RECTANGLE_WIDTH] = thresh[:,:]
         cv2.imshow('VideoWindow', thresh)
@@ -40,7 +80,7 @@ class CokeOCR:
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_TC89_KCOS)
 
         for cnt in contours:
-            if cv2.contourArea(cnt) > 150:
+            if cv2.contourArea(cnt) > 900:
                 print(cv2.contourArea(cnt))
                 [x, y, w, h] = cv2.boundingRect(cnt)
 
@@ -65,6 +105,7 @@ class CokeOCR:
         np.savetxt('generalresponses.data', self.responses)
 
     def ocr(self, im):
+        i = 0
         All = []
         HighY = [] ##create a list to store all the identified values
         LowY = []
@@ -73,15 +114,55 @@ class CokeOCR:
         out = np.zeros(im.shape, np.uint8)
         cropped = crop(im)
         gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
-        blur = cv2.GaussianBlur(gray, (5, 5), 10)
-        thresh = cv2.adaptiveThreshold(blur, 255, 0, 1, 5, 1)
+        blur = cv2.medianBlur(gray,5)
+        
+        thresh = cv2.adaptiveThreshold(gray,255,0,1,11,2)
+        #thresh_color = cv2.cvtColor(thresh,cv2.COLOR_GRAY2BGR)
+        cv2.imshow('VideoWindow', thresh)
+        cv2.waitKey(0)
+
+        thresh = cv2.erode(thresh,None,iterations = 2)
+        cv2.imshow('VideoWindow', thresh)
+        cv2.waitKey(0)
+        
+        thresh = cv2.dilate(thresh,None,iterations = 2)
+        cv2.imshow('VideoWindow', thresh)
+        cv2.waitKey(0)
+
+        thresh = cv2.erode(thresh,None,iterations = 2)
+        cv2.imshow('VideoWindow', thresh)
+        cv2.waitKey(0)
+        
+        thresh = cv2.dilate(thresh,None,iterations = 2)
+        cv2.imshow('VideoWindow', thresh)
+        cv2.waitKey(0)
+
+        #thresh = cv2.dilate(thresh,None,iterations = 3)
+        #cv2.imshow('VideoWindow', thresh)
+        #cv2.waitKey(0)
+
+
+
+
+        thresh = cv2.adaptiveThreshold(thresh, 255, 0, 1, 5, 1)
+        #thresh_im=im.copy()
+        #thresh_im[TARGET_RECTANGLE_Y:TARGET_RECTANGLE_Y+TARGET_RECTANGLE_HEIGHT,TARGET_RECTANGLE_X:TARGET_RECTANGLE_X+TARGET_RECTANGLE_WIDTH] = thresh[:,:]
+        cv2.imshow('VideoWindow', thresh)
+        cv2.waitKey(0)
+
+        median = cv2.medianBlur(thresh, 3)
+        cv2.imshow('VideoWindow', median)
+        cv2.waitKey(0)
+
+        thresh = median.copy()
 
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_TC89_KCOS)
 
         boxes = []
 
         for cnt in contours:
-            if cv2.contourArea(cnt) > 150:
+            i = i+1
+            if cv2.contourArea(cnt) > 1000:
                 [x, y, w, h] = cv2.boundingRect(cnt)
                 ##print 'X AND Y'
 
@@ -126,5 +207,7 @@ class CokeOCR:
             element = HighY.pop(0)
             code = code + chr(int(element[0]))
             #print "ASCII = %c" % (chr(int(element[0])))
-        print "Your code is: %s" % (code)
+        if i < 14+3 and i > 14-3:
+            print "Your code is: %s" % (code)
         return boxes
+        
