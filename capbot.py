@@ -28,11 +28,6 @@ class capbot:
 		self.email = e
 		self.password = pw
 		self.driver = webdriver.Firefox()
-	
-	#def __init__(self):
-	#	self.email = "null"
-	#	self.password = "null"
-	#	self.driver = webdriver.Firefox()
 
 	def get_email(self):
 		return self.email
@@ -52,12 +47,10 @@ class capbot:
 
 		# find email field and enter email
 		inputElement = self.driver.find_element_by_id("emailAddress")
-		#inputElement.send_keys("4biddensodaluv@gmail.com")
 		inputElement.send_keys(self.email)
 
 		# find password field and enter password
 		inputElement = self.driver.find_element_by_id("passwordText")
-		#inputElement.send_keys("sodaluver")
 		inputElement.send_keys(self.password)
 
 		# submit the log-in information
@@ -72,7 +65,6 @@ class capbot:
 		
 		except (ElementNotSelectableException, ElementNotVisibleException, TimeoutException):
 			raise LoginError('Incorrect login information')
-
 		#except:
 		#	raise InternetError('Login timed out, try again later')
 
@@ -85,7 +77,7 @@ class capbot:
 		#close the dialog box that opens when entering a code
 		self.driver.implicitly_wait(5)
 		self.driver.refresh()
-		#self.driver.find_elements_by_tag_name("a").click()
+		
 		
 	
 	def log_out(self):
@@ -97,6 +89,11 @@ class capbot:
 		#close browser window
 		self.driver.close()
 
+#
+#
+#main test
+#
+#
 
 test = capbot('4biddensodaluv@gmail.com', 'sodaluver')
 try:
@@ -105,8 +102,9 @@ except LoginError, e:
 	print "".join(e.args)
 except InternetError, j:
 	print "".join(j.args)
-test.enter_code("v674ppv4x770k5")
+test.enter_code("abc123")
 test.log_out()
 print "done"
-#finally:
-#	test.log_out()
+
+
+
