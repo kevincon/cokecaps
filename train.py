@@ -118,23 +118,23 @@ class CokeOCR:
         
         thresh = cv2.adaptiveThreshold(gray,255,0,1,11,2)
         #thresh_color = cv2.cvtColor(thresh,cv2.COLOR_GRAY2BGR)
-        cv2.imshow('VideoWindow', thresh)
+#cv2.imshow('VideoWindow', thresh)
         #cv2.waitKey(0)
 
         thresh = cv2.erode(thresh,None,iterations = 2)
-        cv2.imshow('VideoWindow', thresh)
+#       cv2.imshow('VideoWindow', thresh)
         #cv2.waitKey(0)
         
         thresh = cv2.dilate(thresh,None,iterations = 2)
-        cv2.imshow('VideoWindow', thresh)
+#       cv2.imshow('VideoWindow', thresh)
         #cv2.waitKey(0)
 
         thresh = cv2.erode(thresh,None,iterations = 2)
-        cv2.imshow('VideoWindow', thresh)
+#       cv2.imshow('VideoWindow', thresh)
         #cv2.waitKey(0)
         
         thresh = cv2.dilate(thresh,None,iterations = 2)
-        cv2.imshow('VideoWindow', thresh)
+#       cv2.imshow('VideoWindow', thresh)
         #cv2.waitKey(0)
 
         #thresh = cv2.dilate(thresh,None,iterations = 3)
@@ -147,11 +147,11 @@ class CokeOCR:
         thresh = cv2.adaptiveThreshold(thresh, 255, 0, 1, 5, 1)
         #thresh_im=im.copy()
         #thresh_im[TARGET_RECTANGLE_Y:TARGET_RECTANGLE_Y+TARGET_RECTANGLE_HEIGHT,TARGET_RECTANGLE_X:TARGET_RECTANGLE_X+TARGET_RECTANGLE_WIDTH] = thresh[:,:]
-        cv2.imshow('VideoWindow', thresh)
+#       cv2.imshow('VideoWindow', thresh)
         #cv2.waitKey(0)
 
         median = cv2.medianBlur(thresh, 3)
-        cv2.imshow('VideoWindow', median)
+#       cv2.imshow('VideoWindow', median)
         #cv2.waitKey(0)
 
         thresh = median.copy()
@@ -161,13 +161,14 @@ class CokeOCR:
         boxes = []
 
         for cnt in contours:
-            i = i+1
-            if cv2.contourArea(cnt) > 1000:
+#           i = i+1
+            if cv2.contourArea(cnt) > 1100:
                 [x, y, w, h] = cv2.boundingRect(cnt)
                 ##print 'X AND Y'
 
                 #print "x = %d and y = %d" % (x,y)
                 if h > 28:
+		    i = i+1
                     roi = thresh[y:y + h, x:x + w]
                     roismall = cv2.resize(roi, (10, 10))
                     roismall = roismall.reshape((1, 100))
@@ -193,21 +194,21 @@ class CokeOCR:
                 HighY.append(el)
             else:
                 LowY.append(el)
-
+		
         code = ''
 
         LowY.sort(key=lambda x: x[1])
         while len(LowY) != 0:  # process top row
             element = LowY.pop(0)
             code = code + chr(int(element[0]))
-            #print "ASCII = %c" % (chr(int(element[0])))
+	#print "ASCII = %c" % (chr(int(element[0])))
 
         HighY.sort(key=lambda x: x[1])
         while len(HighY) != 0:  # process bot row
             element = HighY.pop(0)
             code = code + chr(int(element[0]))
             #print "ASCII = %c" % (chr(int(element[0])))
-        if i < 14+3 and i > 14-3:
+        if i < 14+2 and i > 14-2:
             print "Your code is: %s" % (code)
         return boxes
 
