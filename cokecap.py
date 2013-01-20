@@ -32,6 +32,7 @@ def draw_overlays():
 
 def rect_from_center(image, (X, Y), width, height, (B, G, R)):
     cv2.rectangle(image, (X - width / 2, Y - height / 2), (X + width / 2, Y + height / 2), (B, G, R), 2)
+    cv2.circle(image, (X, Y), TARGET_CIRCLE_RADIUS, (B, G, R), 2)
 
 
 def take_picture():
