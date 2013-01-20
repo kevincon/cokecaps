@@ -8,9 +8,12 @@ train = False
 lock = threading.Lock()
 timer = None
 stop_timer = False
+backup = False
 
 # Start overlay variables
 ocr_boxes = []
+
+files = []
 
 # End overlay variables
 
@@ -18,10 +21,20 @@ for arg in sys.argv:
     if arg == 'train':
         train = True
         break
+    #if arg == 'backup':
+     #   backup = True
 
 frame = None
 ocr = CokeOCR(train)
 
+#get all of the prepopulated files
+i=1
+while i<=TOTAL_NUM:
+    files.append('iPhone'+str(i)+'.jpg')
+    i = i+1
+
+#for filess in files:
+ #   print filess
 
 def draw_overlays():
     #print boxes
