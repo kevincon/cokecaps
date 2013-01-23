@@ -54,7 +54,7 @@ def take_picture():
     ocr_boxes = ocr.ocr(frame)
     print "take picture!"
     if not stop_timer:
-        timer = threading.Timer(3, take_picture)
+        timer = threading.Timer(0.5, take_picture)
         timer.start()
     lock.release()
 
@@ -68,7 +68,7 @@ else:
     rval = False
 
 if not train:
-    timer = threading.Timer(3, take_picture)
+    timer = threading.Timer(0.5, take_picture)
     timer.start()
 
 while rval:

@@ -18,7 +18,7 @@ def crop(im):
 class CokeOCR:
     def __init__(self, training_mode):
         if training_mode:
-            self.samples = np.empty((0, 100))
+            self.samples = np.empty((0, 900))
             self.responses = []
         else:
             self.samples = np.loadtxt('generalsamples.data', np.float32)
@@ -87,7 +87,7 @@ class CokeOCR:
                 if h > 20:
                     cv2.rectangle(im, (TARGET_RECTANGLE_X + x, TARGET_RECTANGLE_Y + y), (TARGET_RECTANGLE_X + x + w, TARGET_RECTANGLE_Y + y + h), (0, 255, 0), 2)
                     roi = thresh[y:y + h, x:x + w]
-                    roismall = cv2.resize(roi, (10, 10))
+                    roismall = cv2.resize(roi, (20, 45))
                     cv2.imshow('VideoWindow', im)
                     key = cv2.waitKey(0)
 
@@ -95,7 +95,7 @@ class CokeOCR:
                         return
                     elif chr(key).upper() in CODESET:
                         self.responses.append(key)
-                        sample = roismall.reshape((1, 100))
+                        sample = roismall.reshape((1, 900))
                         self.samples = np.append(self.samples, sample, 0)
 
     def publish(self):
@@ -166,20 +166,20 @@ class CokeOCR:
                 [x, y, w, h] = cv2.boundingRect(cnt)
                 ##print 'X AND Y'
 
-                #print "x = %d and y = %d" % (x,y)
-                if h > 28:
-		    i = i+1
+                #print "x = %d and y = %d and w = %d and h = %d" % (x,y,w,h)
+                if h > 40:
+                    i = i+1
                     roi = thresh[y:y + h, x:x + w]
-                    roismall = cv2.resize(roi, (10, 10))
-                    roismall = roismall.reshape((1, 100))
+                    roismall = cv2.resize(roi, (20, 45))
+                    roismall = roismall.reshape((1, 900))
                     roismall = np.float32(roismall)
                     retval, results, neigh_resp, dists = self.model.find_nearest(roismall, k=1)
                     string = str(int((results[0][0])))
               #      if y < 100:
                #         print "%d and y = %d and string = %s" % (x,y,string)
-                    if y > highY + 100:  # update highest Y
+                    if y > highY + 40:  # update highest Y
                         highY = y
-                    if x > highX + 50:
+                    if x > highX + 40:
                         highX = x
                     All.append((string, x, y))
                     ##print string
@@ -190,7 +190,7 @@ class CokeOCR:
                     #print "HIGHX = %s" % (highX)
 
         for el in All:  # sort them into high Y and low Y
-            if el[2] > highY - 100 and el[2] < highY + 100:
+            if el[2] > highY - 40 and el[2] < highY + 40:
                 HighY.append(el)
             else:
                 LowY.append(el)
